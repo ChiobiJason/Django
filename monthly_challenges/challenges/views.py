@@ -20,6 +20,18 @@ monthly_challenges = {
 # Create your views here.
 
 
+def challenges(request):
+    months = list(monthly_challenges.keys())
+    page_text = "<ul>"
+    for i in range(len(monthly_challenges)):
+        current_month = months[i].capitalize()
+        page_text += f"<li><a href='{months[i]
+                                     }'>{current_month}</a></li>"
+        if i == len(monthly_challenges) - 1:
+            page_text += "</ul>"
+    return HttpResponse(page_text)
+
+
 def monthly_challenge_by_number(request, month):
     months = list(monthly_challenges.keys())
 
@@ -35,6 +47,7 @@ def monthly_challenge_by_number(request, month):
 def monthly_challenge(request, month):
     try:
         challenge_text = monthly_challenges[month]
-        return HttpResponse(challenge_text)
+        response_data = f"<h1>{challenge_text}</h1>"
+        return HttpResponse(response_data)
     except:
-        return HttpResponseNotFound("This month is not supported")
+        return HttpResponseNotFound("<h1>This month is not supported</h1>")
