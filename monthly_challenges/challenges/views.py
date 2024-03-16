@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
+from django.http import Http404, HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse
+from django.template.loader import render_to_string
 
 monthly_challenges = {
     "january": "Eat no meat for the entire month!",
@@ -14,7 +15,8 @@ monthly_challenges = {
     "september": "Practice for interviews",
     "october": "Explore the world",
     "november": "Go to interview",
-    "december": "Go home for christmas"
+    "december": None
+    # "Go home for christmas"
 }
 
 # Create your views here.
@@ -22,14 +24,10 @@ monthly_challenges = {
 
 def challenges(request):
     months = list(monthly_challenges.keys())
-    page_text = "<ul>"
-    for i in range(len(monthly_challenges)):
-        current_month = months[i].capitalize()
-        page_text += f"<li><a href='{months[i]
-                                     }'>{current_month}</a></li>"
-        if i == len(monthly_challenges) - 1:
-            page_text += "</ul>"
-    return HttpResponse(page_text)
+
+    return render(request, "challenges/index.html", {
+        "months": months
+    })
 
 
 def monthly_challenge_by_number(request, month):
@@ -47,6 +45,9 @@ def monthly_challenge_by_number(request, month):
 def monthly_challenge(request, month):
     try:
         challenge_text = monthly_challenges[month]
-        return render(request, "challenges/challenge.html")
+        return render(request, "challenges/challenge.html", {
+            "text": challenge_text,
+            "month": month
+        })
     except:
-        return HttpResponseNotFound("<h1>This month is not supported</h1>")
+        raise Http404()
